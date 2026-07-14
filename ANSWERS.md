@@ -1,0 +1,12 @@
+## Section 1: Incident Investigation Log
+
+Step 1: Check the logs and latency: It is mentioned that the api works fast and responds within ~80 ms but as soon as the load increases, like for the user with 200+ orders, it chokes and crawls to 30 seconds timeout. This indicates the issue is directly related to data volume scaling, i.e., it is a performance issue and not some syntax error, otherwise, it could have failed even for the low load queries.
+
+Step 2: Check the infrastructure: Since the code was not changed, I would verify if the server itself is overloaded. For instance, the database CPU could be maxed out at 100%, or maybe the RAM is full or maybe the server itself is down. But, these are not the cases, so I rule out the server crash.
+
+Step 3: Check the ORM and Database Queries (The Breakthrough): I would run a database query profiler, say django-silk, to see every query Django executes. I notice that user with 1 order hits 2 queries and another user with 200 orders, hits 201 queries. This confirms the query count scales linearly (O(N)) with the number of database records, verifying that it is the loop driven logic causing the database bottleneck. Simply, this means that instead of just 1 query which could serve the purpose, the server is making 201 queries for the same amount of orders, causing the problem.
+
+Root Cause Identification: The root cause is the 'N+1' query problem. Basically, the view loads all 200 rows from the database (order = Order.objects.all()), which is the first query, and then to fetch the customer name (order.customer.name or order.product.title), it goes to the database once for each of the 200 orders, thus adding the database round-trip overhead. Also, since the code was not changed, the recent deployment likely exposed this hidden architectural flaw. Meaning, in the development stage, smaller dataset was used which didn't expose the bad code. But during deployment, a data migration included a large volume of data for production purpose. So, the code stayed the same but the data volume didn't, finally causing the API to crash.
+
+
+NOTE: Profiler evidence proving the query count reduction from 201 to 1 is attached in the /evidence directory as evidence_before.png and evidence_after.png
