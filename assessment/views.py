@@ -17,7 +17,7 @@ class OrderSummaryAPIView(APIView):
         # N + 1 problem and the server crash.
         # orders = Order.objects.all()
         
-        # THE FIXED CODE
+        # THE FIXED CODE (WHY THIS WORKS)
         # select_related fetches the foreign key data in the same trip. This means, when the server goes to the Database to 
         # fetch the order objects, it says grab all order objects PLUS attach/staple the foreign key data, that is, the related table
         # data, which in this case is the Customer table's data, to each order object and then return the entire set of objects back to the code.
