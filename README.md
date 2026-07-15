@@ -4,7 +4,7 @@
 
 ---
 
-## Loom Walkthrough (Optional)
+## Google Drive Walkthrough
 
 If you recorded a walkthrough, add the link here:
 
