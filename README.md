@@ -4,9 +4,7 @@
 
 ---
 
-## Google Drive Walkthrough
-
-If you recorded a walkthrough, add the link here:
+## Google Drive video Walkthrough
 
 **Google Drive:** `https://drive.google.com/drive/folders/1Rnu6Ijsqi1zeAb5KB_Xro-BRDesyFkxI?usp=sharing`
 
